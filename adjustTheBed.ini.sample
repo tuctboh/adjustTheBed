@@ -1,0 +1,9 @@
+[amazon]
+skillId=XXXXXXXX-YYYY-ZZZZ-AAAA-BBBBBBBBBBBB
+
+[sleepnum]
+site_url=https://prod-api.sleepiq.sleepnumber.com
+user_agent="Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 1.0.3705; .NET CLR 1.1.4322; theBed 1.0 by Tuc)"
+
+[global]
+debug=0

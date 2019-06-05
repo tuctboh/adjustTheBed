@@ -1,0 +1,54 @@
+{
+  "manifest": {
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "https://example.com/adjustTheBed/adjustTheBed.php",
+          "sslCertificateType": "SelfSigned"
+        },
+        "interfaces": []
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "locales": {
+        "en-US": {
+          "privacyPolicyUrl": "https://example.com/privacy.html",
+          "termsOfUseUrl": "https://example.com/terms-of-service.html"
+        }
+      },
+      "allowsPurchases": false,
+      "usesPersonalInfo": true,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false
+    },
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "name": "Adjust The Bed for Sleep Number(r)",
+          "summary": "Control your SleepNumber(r) bed from your Alexa device",
+          "description": "This currently will allow you to :\n\n1) Find out if someone is on a specific side of the bed\n\"Alexa, ask adjust the bed is there someone in the left side of the bed\"\n2) Find out what the setting is for a specific side of the bed\n\"Alexa, ask adjust the bed what is the right side sleep number\"\n3) Set the setting for a specific side of the bed\n\"Alexa, ask adjust the bed to change sleep number on the left  side to 35\"\n\nYou MUST at a minimum have a SleepIQ bed and web account. This skill will not work without one. To get a signup link, you can say \"Alexa, ask adjust the bed to sign up\". Use that link and either your SleepIQ user/pass or your adjustTheBedPassProxy (https://github.com/tuctboh/adjustTheBedPassProxy) during the signup.\n\nIf you make a mistake entering either, please use \"Alexa, ask adjust the bed to reset my information\" and then you can say \"Alexa, ask adjust the bed to sign up\".\n\nThis is just the beginning, we plan to add the ability to adjust the head and feet too!",
+          "examplePhrases": [
+            "Alexa ask adjust the bed change the sleep number on the right to 50",
+            "Alexa ask adjust the bed to sign up",
+            "Alexa ask adjust the bed what is the right sleep number"
+          ],
+          "keywords": [
+            "Sleep",
+            "Number",
+            "Adjustable",
+            "Bed",
+            "mattress",
+            "adjust",
+            "bed"
+          ],
+          "updatesDescription": "Initial release"
+        }
+      },
+      "isAvailableWorldwide": true,
+      "category": "SMART_HOME",
+      "distributionCountries": []
+    }
+  }
+}

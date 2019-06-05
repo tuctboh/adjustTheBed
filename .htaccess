@@ -1,0 +1,23 @@
+# No one needs to access this directly
+<Files "*">
+   Order Deny,allow
+   Deny from all
+</Files>
+# But these files are OK:
+<Files "adjustTheBed.php">
+   Order Deny,Allow
+   Allow from all
+</Files>
+<Files "signup.php">
+   Order Deny,Allow
+   Allow from all
+</Files>
+<Files "style.css">
+   Order Deny,Allow
+   Allow from all
+</Files>
+<Files "sn.png">
+   Order Deny,Allow
+   Allow from all
+</Files>
+

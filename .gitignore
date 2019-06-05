@@ -1,0 +1,4 @@
+.*.pem
+.php_cs.cache
+adjustTheBed.ini
+*.db
