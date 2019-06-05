@@ -1,4 +1,4 @@
-# theBed
+# adjustTheBed
 
 This is a utility to be able to control your Sleep Number(r) bed from your Amazon Alexa(r) device.
 
@@ -15,7 +15,7 @@ So there are a few ways you can do this..... From least of an issue but biggest 
 
 ## Usage
 
-"Alexa, ask THE BED get left" - Will tell you the current setting of the left side
+"Alexa, ask ADJUST THE BED get left" - Will tell you the current setting of the left side
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
