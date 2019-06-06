@@ -75,8 +75,8 @@ function doMain($post)
             $card_outtext = "Welcome back to 'adjust the bed' for Sleep Number(r). You are already signed up so feel free to say something like Alexa, ask adjust the bed to set the left side to 40 or Alexa, ask adjust the bed what is the left side sleep number";
             $stayopen="true";
         } else {
-            $outtext = "Welcome to adjust the bed. You are already signed up so feel free to say something like Alexa, ask adjust the bed to set the left side to 40 or Alexa, ask adjust the bed what is the left side sleep number";
-            $card_outtext = "Welcome back to 'adjust the bed' for Sleep Number(r). You are already signed up so feel free to say something like Alexa, ask adjust the bed to set the left side to 40 or Alexa, ask adjust the bed what is the left side sleep number";
+            $outtext = "Thank you for using 'adjust the bed'. To be able to use this skill you must first sign up. Just say \"Alexa, ask adjust the bed to sign up\" for the signup link";
+            $card_outtext = "Welcome to 'adjust the bed' for Sleep Number(r). To be able to use this skill you must first sign up. Just say \"Alexa, ask adjust the bed to sign up\" for the signup link";
         }
     }
 
@@ -110,6 +110,15 @@ function doMain($post)
             writeDebug("adjustTheBed", "In getSleepNumber");
         }
 
+        if ($side != "left" && $side != "right" )
+        {
+            if ($debug) {
+                writeDebug("adjustTheBed","Gave side as $side, rejecting");
+            }
+            outputJSON($side." is not a valid position, please repeat your request using either left or right" , $side." is not a valid position, please repeat your request using either left or right" , "true");
+            exit;
+        }
+
         $response = getResults($amzn_user, "getSleepNumber");
 
         if ($debug) {
@@ -134,6 +143,15 @@ function doMain($post)
     if ($intent == "isInBed") {
         if ($debug) {
             writeDebug("adjustTheBed", "In isInBed");
+        }
+
+        if ($side != "left" && $side != "right" )
+        {
+            if ($debug) {
+                writeDebug("adjustTheBed","Gave side as $side, rejecting");
+            }
+            outputJSON($side." is not a valid position, please repeat your request using either left or right" , $side." is not a valid position, please repeat your request using either left or right" , "true");
+            exit;
         }
 
         $response = getResults($amzn_user, "isInBed");
@@ -162,6 +180,27 @@ function doMain($post)
     if ($intent == "setSleepNumber") {
         if ($debug) {
             writeDebug("adjustTheBed", "In setSleepNumber");
+            writeDebug("adjustTheBed", "Side is $side");
+            writeDebug("adjustTheBed", "SleepNum is $sleepNum");
+        }
+
+        if ($side != "left" && $side != "right" )
+        {
+            if ($debug) {
+                writeDebug("adjustTheBed","Gave side as $side, rejecting");
+            }
+            outputJSON($side." is not a valid position, please repeat your request using either left or right" , $side." is not a valid position, please repeat your request using either left or right" , "true");
+            exit;
+        }
+
+        if ($sleepNum < 0 || $sleepNum > 100 || !isset($sleepNum) ) {
+            if ($debug) {
+                writeDebug("adjustTheBed","Gave sleepNum as $sleepNum, rejecting");
+            }
+            $outtext = "The sleep number specified is less than zero or higher than 100. Please try your request again with a number between 0 and 100";
+            $card_outtext=$outtext;
+            outputJSON($outtext, $card_outtext , "true");
+            exit;
         }
 
         if ($side == "left") {
@@ -170,33 +209,29 @@ function doMain($post)
             $shortside="R";
         }
 
-        if ($sleepNum < 0 || $sleepNum > 100) {
-            $outtext = "The sleep number specified is less than zero or higher than 100. Please try your request again with a number between 0 and 100";
-            $card_outtext=$outtext;
-        } else {
-            $setSleepNumber_data=[
-              "side"    => $shortside,
-              "sleepNumber" => $sleepNum,
-            ];
+        $setSleepNumber_data=[
+            "side"    => $shortside,
+            "sleepNumber" => $sleepNum,
+        ];
 
-            $response = getResults($amzn_user, "setSleepNum", $setSleepNumber_data);
-
-            $outtext="The ".$side." side of the bed is being changed to ".$sleepNum;
-            $card_outtext=$outtext;
+        if ($debug) {
+            writeDebug("adjustTheBed","Getting results for setSleepNum");
         }
+        $response = getResults($amzn_user, "setSleepNum", $setSleepNumber_data);
+
+        $outtext="The ".$side." side of the bed is being changed to ".$sleepNum;
+        $card_outtext=$outtext;
+        outputJSON($outtext, $card_outtext, $stayopen);
+        exit;
     }
 
-
-    if ($debug) {
-        writeDebug("adjustTheBed", "Out text");
-        writeDebug("adjustTheBed", $outtext);
-    }
 
     outputJSON($outtext, $card_outtext, $stayopen);
 }
 
 function outputJSON($text, $card, $stayopen)
 {
+    $debug=1;
     header('Content-Type: application/json');
     $PHP_Output                                     = array(
   'version' => '1.0',
@@ -218,6 +253,13 @@ function outputJSON($text, $card, $stayopen)
     $PHP_Output['response']['shouldEndSession'] = $stayopen;
 
     echo json_encode($PHP_Output, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    if ($debug) {
+        writeDebug("adjustTheBed", "Out text");
+        writeDebug("adjustTheBed", $text);
+        writeDebug("adjustTheBed", "Out card");
+        writeDebug("adjustTheBed", $card);
+    }
 }
 
 function writeDebug($f_debugfile, $f_msg)
