@@ -5,7 +5,6 @@ require_once "random_compat-2.0.18/lib/random.php";
 function doMain($post)
 {
     $debug=1;
-    $stayopen="false";
     $outtext="Something didn't go right, please contact the author via the skill information in the Alexa App";
     $card_outtext="Something didn't go right, please contact the author via the skill information in the Alexa App";
     $amzn_user=$post->session->user->userId;
@@ -46,15 +45,15 @@ function doMain($post)
     if (!function_exists('curl_setopt')) {
         $outtext = "This requires cURL as part of PHP";
         $card_outtext = "This requires cURL as part of PHP";
-        $t_prt="";
-        $intent="";
+        outputJSON($outtext, $card_outtext, "false");
+        exit;
     }
 
     if ($t_prt == "SessionEndedRequest") {
         $outtext = "An error occurred with this skill. Please try again or contact the author via the skill information in the Alexa App";
         $card_outtext = "An error occurred with this skill. Please try again or contact the author via the skill information in the Alexa App";
-        $t_prt="";
-        $intent="";
+        outputJSON($outtext, $card_outtext, "false");
+        exit;
     }
 
     if ($intent == "signUp") {
@@ -65,7 +64,8 @@ function doMain($post)
     if ($intent == "AMAZON.CancelIntent" || $intent == "AMAZON.StopIntent") {
         $outtext = "There is nothing to stop or cancel currently";
         $card_outtext = $outtext;
-        outputJSON($outtext, $card_outtext, $stayopen);
+        outputJSON($outtext, $card_outtext, "true");
+        exit;
     }
 
 
@@ -73,10 +73,13 @@ function doMain($post)
         if (isset($d_indb)) {
             $outtext = "Welcome back to adjust the bed. You are already signed up so feel free to say something like Alexa, ask adjust the bed to set the left side to 40 or Alexa, ask adjust the bed what is the left side sleep number";
             $card_outtext = "Welcome back to 'adjust the bed' for Sleep Number(r). You are already signed up so feel free to say something like Alexa, ask adjust the bed to set the left side to 40 or Alexa, ask adjust the bed what is the left side sleep number";
-            $stayopen="true";
+            outputJSON($outtext, $card_outtext, "true");
+            exit;
         } else {
             $outtext = "Thank you for using 'adjust the bed'. To be able to use this skill you must first sign up. Just say \"Alexa, ask adjust the bed to sign up\" for the signup link";
             $card_outtext = "Welcome to 'adjust the bed' for Sleep Number(r). To be able to use this skill you must first sign up. Just say \"Alexa, ask adjust the bed to sign up\" for the signup link";
+            outputJSON($outtext, $card_outtext, "false");
+            exit;
         }
     }
 
@@ -84,7 +87,8 @@ function doMain($post)
         if (!isset($d_indb)) {
             $outtext = "Thank you for using 'adjust the bed'. To be able to use this skill you must first sign up. Just say \"Alexa, ask adjust the bed to sign up\" for the signup link";
             $card_outtext = "Welcome to 'adjust the bed' for Sleep Number(r). To be able to use this skill you must first sign up. Just say \"Alexa, ask adjust the bed to sign up\" for the signup link";
-            $intent="";
+            outputJSON($outtext, $card_outtext, "false");
+            exit;
         }
     }
 
@@ -103,20 +107,21 @@ function doMain($post)
         }
         $outtext="Your userid is ".$amzn_user." and the skillid is ".$appid;
         $card_outtext=$outtext;
+        outputJSON($outtext, $card_outtext, "true");
+        exit;
+    }
+
+    if ($side != "left" && $side != "right") {
+        if ($debug) {
+            writeDebug("adjustTheBed", "Gave side as $side, rejecting");
+        }
+        outputJSON($side." is not a valid position, please repeat your request using either left or right", $side." is not a valid position, please repeat your request using either left or right", "true");
+        exit;
     }
 
     if ($intent == "getSleepNumber") {
         if ($debug) {
             writeDebug("adjustTheBed", "In getSleepNumber");
-        }
-
-        if ($side != "left" && $side != "right" )
-        {
-            if ($debug) {
-                writeDebug("adjustTheBed","Gave side as $side, rejecting");
-            }
-            outputJSON($side." is not a valid position, please repeat your request using either left or right" , $side." is not a valid position, please repeat your request using either left or right" , "true");
-            exit;
         }
 
         $response = getResults($amzn_user, "getSleepNumber");
@@ -138,20 +143,13 @@ function doMain($post)
 
         $outtext="The sleep number for the ".$side." side is ".$sleepNumber;
         $card_outtext=$outtext;
+        outputJSON($outtext, $card_outtext, "true");
+        exit;
     }
 
     if ($intent == "isInBed") {
         if ($debug) {
             writeDebug("adjustTheBed", "In isInBed");
-        }
-
-        if ($side != "left" && $side != "right" )
-        {
-            if ($debug) {
-                writeDebug("adjustTheBed","Gave side as $side, rejecting");
-            }
-            outputJSON($side." is not a valid position, please repeat your request using either left or right" , $side." is not a valid position, please repeat your request using either left or right" , "true");
-            exit;
         }
 
         $response = getResults($amzn_user, "isInBed");
@@ -175,6 +173,18 @@ function doMain($post)
         $outtext.=$isInBed ? ' ' : ' not ';
         $outtext.="in the ".$side." side of the bed";
         $card_outtext=$outtext;
+        outputJSON($outtext, $card_outtext, "true");
+        exit;
+    }
+
+    if ($sleepNum < 0 || $sleepNum > 100 || !isset($sleepNum)) {
+        if ($debug) {
+            writeDebug("adjustTheBed", "Gave sleepNum as $sleepNum, rejecting");
+        }
+        $outtext = "The sleep number specified is less than zero or higher than 100. Please try your request again with a number between 0 and 100";
+        $card_outtext=$outtext;
+        outputJSON($outtext, $card_outtext, "true");
+        exit;
     }
 
     if ($intent == "setSleepNumber") {
@@ -182,25 +192,6 @@ function doMain($post)
             writeDebug("adjustTheBed", "In setSleepNumber");
             writeDebug("adjustTheBed", "Side is $side");
             writeDebug("adjustTheBed", "SleepNum is $sleepNum");
-        }
-
-        if ($side != "left" && $side != "right" )
-        {
-            if ($debug) {
-                writeDebug("adjustTheBed","Gave side as $side, rejecting");
-            }
-            outputJSON($side." is not a valid position, please repeat your request using either left or right" , $side." is not a valid position, please repeat your request using either left or right" , "true");
-            exit;
-        }
-
-        if ($sleepNum < 0 || $sleepNum > 100 || !isset($sleepNum) ) {
-            if ($debug) {
-                writeDebug("adjustTheBed","Gave sleepNum as $sleepNum, rejecting");
-            }
-            $outtext = "The sleep number specified is less than zero or higher than 100. Please try your request again with a number between 0 and 100";
-            $card_outtext=$outtext;
-            outputJSON($outtext, $card_outtext , "true");
-            exit;
         }
 
         if ($side == "left") {
@@ -215,18 +206,15 @@ function doMain($post)
         ];
 
         if ($debug) {
-            writeDebug("adjustTheBed","Getting results for setSleepNum");
+            writeDebug("adjustTheBed", "Getting results for setSleepNum");
         }
         $response = getResults($amzn_user, "setSleepNum", $setSleepNumber_data);
 
         $outtext="The ".$side." side of the bed is being changed to ".$sleepNum;
         $card_outtext=$outtext;
-        outputJSON($outtext, $card_outtext, $stayopen);
+        outputJSON($outtext, $card_outtext, "false");
         exit;
     }
-
-
-    outputJSON($outtext, $card_outtext, $stayopen);
 }
 
 function outputJSON($text, $card, $stayopen)
