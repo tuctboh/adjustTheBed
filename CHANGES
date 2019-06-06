@@ -7,3 +7,7 @@ During certification they needed some things changed...
 2) Couldn't complete a full review... Ok, weird to make it fail on failing
 3) The welcome prompt provided must be appropriate to the context of the skill's functionality as defined in its description. Additionally, make sure the session remains open and allows users to continue navigate within the skill. - Fixed the first part. Added keeping session open ONLY on Launch with no entry, otherwise its useless
 4) The core functionality of the skill could not be completed using the customer facing information. - Fancy way of saying they tried to put garbage in and it failed without accounting for it. - Meh. Fine.
+
+V1.1
+----
+They said the certification failed again. Not sure what happened, but added some extra variable sanity checking to stave that off.
